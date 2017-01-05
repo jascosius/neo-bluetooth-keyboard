@@ -1,0 +1,26 @@
+#!/usr/bin/expect -f
+
+#echo -e 'agent on\nlist\nlist\ndefault-agent\nscan on\ndiscoverable on' | bluetoothctl
+set timeout 60
+
+spawn "bluetoothctl"
+expect "# "
+send "discoverable on\r"
+expect "Changing discoverable on succeeded"
+send "pairable on\r"
+expect "Changing pairable on succeeded"
+send "agent on\r"
+expect "Agent registered"
+send "default-agent\r"
+expect "Default agent request successful"
+
+expect "agent"
+expect "Confirm passkey"
+send "yes\r"
+
+expect "Paired: yes"
+send "discoverable off\r"
+expect "Changing discoverable off succeeded"
+send "pairable off\r"
+expect "Changing pairable off succeeded"
+

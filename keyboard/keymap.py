@@ -185,7 +185,10 @@ modkeys = {
    "KEY_LEFTMETA" : 4,
    "KEY_LEFTALT": 5,
    "KEY_LEFTSHIFT": 6,
-   "KEY_LEFTCTRL": 7
+   "KEY_LEFTCTRL": 7,
+   "KEY_CAPSLOCK": 8,
+   "KEY_BACKSLASH": 9, ##
+   "KEY_102ND": 10, #<>
 }
 
 def convert(evdev_keycode):

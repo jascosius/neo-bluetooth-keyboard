@@ -73,8 +73,9 @@ class BTKbBluezProfile(dbus.service.Object):
 #
 class BTKbDevice():
     #change these constants 
-    MY_ADDRESS="00:1A:7D:DA:71:13"
-    MY_DEV_NAME="DeskPi_BTKb"
+    MY_ADDRESS="A1:B2:C3:D4:E5:F6"
+    #MY_ADDRESS=""
+    MY_DEV_NAME="Neo-Bluetooth-Keyboard"
 
     #define some constants
     P_CTRL =17  #Service port - must match port configured in SDP record
@@ -87,6 +88,12 @@ class BTKbDevice():
     def __init__(self):
 
         print("Setting up BT device")
+
+        if self.MY_ADDRESS == "A1:B2:C3:D4:E5:F6":
+            print("Please set MY_ADDRESS to MAC address of your bluetooth device")
+            sys.exit(1)
+        else:
+            print("Please make sure MY_ADDRESS=",self.MY_ADDRESS," is the MAC address of your bluetooth device")
 
         self.init_bt_device()
         self.init_bluez_profile()
@@ -164,6 +171,7 @@ class BTKbDevice():
         self.sinterrupt.listen(1)
 
         self.ccontrol,cinfo = self.scontrol.accept()
+        print ("Connected")
         print ("Got a connection on the control channel from " + cinfo[0])
 
         self.cinterrupt, cinfo = self.sinterrupt.accept()

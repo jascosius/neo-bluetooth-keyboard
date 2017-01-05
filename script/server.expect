@@ -1,0 +1,11 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+set server [lindex $argv 0]
+set client [lindex $argv 1]
+
+spawn "$server"
+expect "Connected"
+spawn "$client"
+
+interact

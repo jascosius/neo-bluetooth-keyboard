@@ -13,11 +13,16 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 import time
+import signal
 import evdev # used to get input from the keyboard
 from evdev import *
 import keymap # used to map evdev input to hid keodes
+import mapneo
 
 
+signal.signal(signal.SIGINT, signal.SIG_IGN)
+signal.signal(signal.SIGTSTP, signal.SIG_IGN)
+signal.signal(signal.SIGQUIT, signal.SIG_IGN)
 
 #Define a client to listen to local key events
 class Keyboard():
@@ -46,6 +51,9 @@ class Keyboard():
 			0x00,
 			0x00]
 
+		self.mods=[0,0,0,0,0,0,0,0,0,0,0]
+                self.lock=1
+
 		print "setting up DBus Client"	
 
 		self.bus = dbus.SystemBus()
@@ -72,20 +80,22 @@ class Keyboard():
 
 	def change_state(self,event):
 		evdev_code=ecodes.KEY[event.code]
-		modkey_element = keymap.modkey(evdev_code)
+                modkey_element = keymap.modkey(evdev_code)
 		
 		if modkey_element > 0:
-			if self.state[2][modkey_element] ==0:
-				self.state[2][modkey_element]=1
+			if self.mods[modkey_element] ==0:
+				self.mods[modkey_element]=1
 			else:
-				self.state[2][modkey_element]=0
+				self.mods[modkey_element]=0
+			self.lock = mapneo.locks(self.mods,self.lock)
 		
 		else:
 	
 			#Get the keycode of the key
-			hex_key = keymap.convert(ecodes.KEY[event.code])
+			hex_key_old = keymap.convert(ecodes.KEY[event.code])
+			hex_key = mapneo.convert(hex_key_old,self.mods,self.state[2],self.lock)
 			#Loop through elements 4 to 9 of the inport report structure
-			for i in range(4,10):
+			for i in range(4,10): #(4,10)
 				if self.state[i]== hex_key and event.value ==0:
 					#Code 0 so we need to depress it
 					self.state[i] = 0x00
